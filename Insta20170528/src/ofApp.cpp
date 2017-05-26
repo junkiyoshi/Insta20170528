@@ -27,23 +27,24 @@ void ofApp::draw(){
 	Leap::Frame frame = leap.frame();
 	Leap::HandList hands = frame.hands();
 	for (int i = 0; i < hands.count(); i++) {
-		this->drawHand(hands[i]);
+		// this->drawHand(hands[i]);
 		if (hands[i].isRight()) {
 			r_location = ofVec3f(hands[i].palmPosition().x, hands[i].palmPosition().y - ofGetHeight() / 2, hands[i].palmPosition().z);
 			r_location.normalize();
 			r_location *= 300;
 		} else {
-			l_location = ofVec3f(hands[i].palmPosition().x, hands[i].palmPosition().y - ofGetHeight() / 2, hands[i].palmPosition().z);
-			l_location.normalize();
-			l_location *= 300;
+			//l_location = ofVec3f(hands[i].palmPosition().x, hands[i].palmPosition().y - ofGetHeight() / 2, hands[i].palmPosition().z);
+			//l_location.normalize();
+			//l_location *= 300;
 		}
 	}
 
 	vector<ofVec3f> locations;
+	vector<ofColor> colors;
 	
 	int span = 10;
 	for (int i = 0; i < 360; i += span) {
-		for (int j = 0; j < 180; j += span) {
+		for (int j = span; j < 180; j += span) {
 			int x = radius * cos(i * DEG_TO_RAD) * sin(j * DEG_TO_RAD);
 			int y = radius * sin(i * DEG_TO_RAD) * sin(j * DEG_TO_RAD);
 			int z = radius * cos(j * DEG_TO_RAD);
@@ -54,19 +55,20 @@ void ofApp::draw(){
 			ofVec3f l_distance = l_location - location;
 			int red = 0;
 			int blue = 0;
-			if (r_distance.length() < this->radius * 0.8 || l_distance.length() < this->radius * 0.5) { location *= 1.5; }
+			if (r_distance.length() < this->radius * 0.7 || l_distance.length() < this->radius * 0.7) { location *= 1.5; }
 		
 			locations.push_back(location);
 		}
 	}
 
+	ofSetLineWidth(0.5);
+	ofSetColor(255);
 	for (ofVec3f& location : locations) {
 		for (ofVec3f& s_location : locations) {
 			float distance = location.distance(s_location);
-			if (location.length() < this->radius && distance < 50) {
+			if (location.length() > this->radius - span && location.length() < this->radius + span && distance < 50) {
 				ofLine(location, s_location);
-			}
-			else if (location.length() > this->radius && distance < 100) {
+			} else if (location.length() > this->radius && distance < 100) {
 				ofLine(location, s_location);
 			}
 		}
